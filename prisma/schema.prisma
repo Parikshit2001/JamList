@@ -12,3 +12,41 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  rooms Room[]
+  votes Vote[]
+}
+
+model Room {
+  id          String  @id @default(uuid())
+  name        String
+  description String  @default("")
+  image       String?
+  users       User[]
+  songs       Song[]
+}
+
+model Song {
+  id        String  @id @default(uuid())
+  spotifyId String
+  votes     Vote[]
+  room      Room?   @relation(fields: [roomId], references: [id])
+  roomId    String?
+}
+
+model Vote {
+  id     String   @id @default(uuid())
+  user   User     @relation(fields: [userId], references: [id])
+  userId String
+  song   Song     @relation(fields: [songId], references: [id])
+  songId String
+  type   VoteType
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
